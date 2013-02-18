@@ -76,14 +76,14 @@ if($carrierStyle == "") {
 		
 		//show the correct carrier inputs
 		if($carrierStyle == "c03"){
-			//ASCII codes inclusive for A through C
-			showCarrier(65, 67, 3);
+			//3 rows from A to C
+			showCarrier('A', 'C', 3);
 		} else if($carrierStyle == "c02"){
-			//ASCII codes inclusive for A through C
-			showCarrier(65, 67, 2);
+			//2 rows from A to C
+			showCarrier('A', 'C', 2);
 		} else if($carrierStyle == "k02"){
-			//ASCII codes inclusive for A through K
-			showCarrier(65, 75, 2);
+			//2 rows from A to K
+			showCarrier('A', 'K', 2);
 		}
 		
 	echo '</table>
@@ -100,7 +100,9 @@ echo '</div>';
  * Prints out a carrier given the start and end ASCII codes for the carrier cell letters
  * and the number of the top row of the carrier (it counts down to row 1)
  */
-function showCarrier($start, $end, $top_row){
+function showCarrier($f_ch, $l_ch, $top_row){
+	$start = ord($f_ch);
+	$end   = ord($l_ch);
 	global $BOX_BC_LEN;
 	//this method of numbering rows is valid for 0 through 9.
 	for($row = $top_row; $row >= 1; $row--){
