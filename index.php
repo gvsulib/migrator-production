@@ -2,6 +2,10 @@
 require "resources/secret/mysqlconnect.php";
 require "resources/header.php";
 
+if(DB_NAME == "gvsulib_systems"){
+	echo '<h4>Development Version -- '.DB_NAME.'</h4>';
+}
+
 if(!$logged_in){
 	displayLogin();
 	exit();
