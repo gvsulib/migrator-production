@@ -1,7 +1,7 @@
 <?php
 session_start();
 require "resources/settings.php";
-require "../labs/includes/mysqlconnect.php";
+require "resources/secret/mysqlconnect.php";
 require "resources/functions.php";
 require "resources/login.php";
 if($logged_in){

@@ -1,5 +1,5 @@
 <?php
-require "../../labs/includes/mysqlconnect.php";
+require "../resources/secret/mysqlconnect.php";
 require "../resources/settings.php";
 
 if(isset($_GET['box_c']) && $_GET['box_c'] != ""){
