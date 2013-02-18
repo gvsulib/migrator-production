@@ -1,5 +1,5 @@
 <?php
-require "../labs/includes/mysqlconnect.php";
+require "resources/secret/mysqlconnect.php";
 require "resources/header.php";
 
 if(!$logged_in){
