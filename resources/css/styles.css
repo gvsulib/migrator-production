@@ -1,0 +1,16 @@
+ul#book-list {
+	list-style-type:none;
+}
+
+.lib-error, .lib-alert {
+	margin-top:0.5em;
+}
+
+/* Form styles */
+.lib-form input[type="text"] {display:inline-block; width:10em;}
+
+/* Status Message Styles */
+.lib-success {display: inline-block;}
+.lib-alert {display: inline-block;}
+.lib-error {display: inline-block;}
+.lib-note {display: inline-block;}
