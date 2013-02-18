@@ -97,7 +97,7 @@ echo '</div>';
 
 
 /*
- * Prints out a carrier given the start and end ASCII codes for the carrier cell letters
+ * Prints out a carrier given the start and end characters for the carrier cell letters
  * and the number of the top row of the carrier (it counts down to row 1)
  */
 function showCarrier($f_ch, $l_ch, $top_row){
