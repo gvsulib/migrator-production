@@ -129,10 +129,7 @@ function ins_carr($box_code, $carrier_label, $cell_id){
  */
 function carr_exist($cl){
 	global $books_table;
-	if($cl != "" && $cl != 0){
-		return mysql_num_rows(mysql_query("SELECT idbook FROM $books_table WHERE carrier_label = '$cl'")) > 0;
-	}
-	return true;
+	return mysql_num_rows(mysql_query("SELECT idbook FROM $books_table WHERE carrier_label = '$cl'")) > 0;
 }
 
 /*
@@ -164,18 +161,25 @@ function box_array_ins(&$arr, $index){
  * into the database if the data is valid.
  */
 function processBooks($carrier_label, $carrier_style){
-	global $carrier_exists, $books_table, $boxes_dne, $boxes_dup, $BOX_BC_LEN;
+	global $carrier_exists, $books_table, $boxes_dne, $boxes_dup, 
+		$CARRIER_LEN, $BOX_BC_LEN, $CARRIER_PREFIXES, $invalid_carrier;
 	
 	//validate the carrier label
 	//make sure the carrier label has the proper form as given... DEVELOPMENT
-	if($carrier_label){
-		
-	}
 	$invalid_carrier = true;
+	foreach($CARRIER_PREFIXES AS $key => $prefix){
+		if(strcmp(substr($carrier_label, 0, strlen($prefix)), $prefix) == 0){
+			$invalid_carrier = false;
+		}
+	}
+	//check the length of the carrier label...
+	if(strlen($carrier_label) != $CARRIER_LEN){
+		$invalid_carrier = true;
+	}
 	$carrier_exists = carr_exist($carrier_label);
 	
 	if($carrier_exists || $invalid_carrier){
-		break;	//no sense evaluating the books if the carrier label is wrong already...
+		return false;	//no sense evaluating the books if the carrier label is wrong already...
 	}
 	
 	//array that specifies the number of each box code

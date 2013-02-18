@@ -14,7 +14,9 @@ $EXP_DELIM = ',';
 $BARC_FIRST_DIGITS = 32260;
 $BOOK_BC_LEN = 14;
 $BOX_BC_LEN  = 6;
+
 $CARRIER_LEN = 10;
+$CARRIER_PREFIXES = array('M01W', 'M01E', 'M02W', 'M02E');
 
 //Error icon names
 $RED_ERROR_ICON    = 'pc-ghost-red.png';
