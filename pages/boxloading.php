@@ -76,18 +76,19 @@ function checkSubmit(){
 		$dup_books_arr = array();
 		$x = 0;
 		while(isset($_POST['book_'.$x])){
-			$index = addslashes($_POST['book_'.$x]);
-			if($index == "") break;	//this is the last book barcode
+			$barcode = addslashes($_POST['book_'.$x]);
+			if($barcode == "") break;	//this is the last book barcode
 			
 			//check if the barcode has the correct leading digits
-			if(strcmp(substr($index, 0, strlen($BARC_FIRST_DIGITS)), $BARC_FIRST_DIGITS) != 0){
+			if(strcmp(substr($barcode, 0, strlen($BARC_FIRST_DIGITS)), $BARC_FIRST_DIGITS) != 0 ||
+					strlen($barcode) != $BOOK_BC_LEN){
 				$invalid_barcode = true;
 			}
 			
-			if(!array_key_exists($index, $dup_books_arr)){
-				$dup_books_arr[$index] = 1;
+			if(!array_key_exists($barcode, $dup_books_arr)){
+				$dup_books_arr[$barcode] = 1;
 			} else {
-				$dup_books_arr[$index]++;
+				$dup_books_arr[$barcode]++;
 			}
 			$x++;
 		}

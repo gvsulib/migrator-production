@@ -279,23 +279,6 @@ function validateBoxCode(id){
 		);
 }
 
-//follow the carrier box barcode text inputs to toggle to the next one in the series
-function c_follow_next(letter, id){
-	var selector = letter + "0" + id;
-	$(selector).focus();
-	var new_id = id + 1;
-	if($(selector).val().length == box_bc_len) c_follow_next(letter, new_id);
-	$(selector).keyup(function(e){
-		if($(selector).val().length == box_bc_len && (e.which != 13 || e.which != 9) ){	//not for the tab or enter keys
-			if($("#"+letter+"0"+new_id).length > 0){
-				validateBoxCode(id);
-				markDuplicateBoxes();
-				c_follow_next(letter, new_id);
-			}
-		}
-	});
-}
-
 function markDuplicateBoxes(){
 	$(".box-input").each(function(index, element){
 		if(  checkUniqueBoxes( $(this).val() )  ){
