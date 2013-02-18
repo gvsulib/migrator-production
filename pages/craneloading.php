@@ -165,7 +165,7 @@ function processBooks($carrier_label, $carrier_style){
 		$CARRIER_LEN, $BOX_BC_LEN, $CARRIER_PREFIXES, $invalid_carrier;
 	
 	//validate the carrier label
-	//make sure the carrier label has the proper form as given... DEVELOPMENT
+	//make sure the carrier label has the proper form as given...
 	$invalid_carrier = true;
 	foreach($CARRIER_PREFIXES AS $key => $prefix){
 		if(strcmp(substr($carrier_label, 0, strlen($prefix)), $prefix) == 0){
