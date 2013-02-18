@@ -4,7 +4,7 @@ $m = NULL; // Reset the error messages
 require "settings.php";
 require "login.php";
 require "functions.php";
-if($logged_in) { include "../labs/includes/current_user.php"; }
+if($logged_in) { include "current_user.php"; }
 
 if(isset($_GET['logout']) && $_GET['logout'] == "1"){
 	logout();
