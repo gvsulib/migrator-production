@@ -1,3 +1,11 @@
+input[type="text"].box-input {
+	width:5em !important;
+}
+
+input[type="text"]#carrier-label {
+	width:7em;
+}
+
 ul#book-list {
 	list-style-type:none;
 }
