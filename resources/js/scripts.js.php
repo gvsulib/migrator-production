@@ -28,12 +28,16 @@ $("#box-barcode").keyup(function(e){
 	}
 });
 
+$(".box-input").change(function(){
+	//validateBoxCodes();
+	markDuplicateBoxes();
+});
+
 /* Follow the crane loading text inputs */
 if($("#carrier-label").length > 0){
 	$("#carrier-label").keyup(function(e){
 		if($("#carrier-label").val().length == carrier_len){
 			validateCLabel($("#carrier-label").val());
-			//c_follow_next(letter, id);
 		}
 	});
 }
@@ -245,45 +249,47 @@ function validateCLabel(c_label){
 		);
 }
 
-function validateBoxCode(id){
-	var code = $("input#c"+id).val();
-	var datastring = "box_c=" + code;
-	$.get(  
-       "'.$CONTROLLER_ROOT.'checkbox.php?"+datastring,  
-       {language: "php", version: 5},  
-       function(data){
-			if(data == "0" || code.length != box_bc_len){
-				$("input#c"+id).css("color", "red");
-				$("input#c"+id).qtip({
-					content: \'This box is not in the database.\',
-					show: \'mouseover\',
-					hide: \'mouseout\',
-					style: {
-						name:\'red\',
-						tip:\'bottomMiddle\'
-					},
-					position :{
-						corner: {
-							target: \'topMiddle\',
-							tooltip: \'bottomMiddle\'
+function validateBoxCodes(){
+	$(".box-input").each(function(){
+		var code = $(this).val();
+		var datastring = "box_c=" + code;
+		$.get(  
+		   "'.$CONTROLLER_ROOT.'checkbox.php?"+datastring,  
+		   {language: "php", version: 5},  
+		   function(data){
+				if(data == "0" || code.length != box_bc_len){
+					$(this).css("color", "red");
+					$(this).qtip({
+						content: \'This box is not in the database.\',
+						show: \'mouseover\',
+						hide: \'mouseout\',
+						style: {
+							name:\'red\',
+							tip:\'bottomMiddle\'
+						},
+						position :{
+							corner: {
+								target: \'topMiddle\',
+								tooltip: \'bottomMiddle\'
+							}
 						}
-					}
-				});
-			} else {
-				$("input#c"+id).css("color", "black");
-				try{
-					$("input#c"+id).qtip(\'destroy\');
-				} catch(err){}
+					});
+				} else {
+					$(this).css("color", "black");
+					try{
+						$(this).qtip(\'destroy\');
+					} catch(err){}
+				}
 			}
-		}
-		);
+			);
+	});
 }
 
 function markDuplicateBoxes(){
 	$(".box-input").each(function(index, element){
 		if(  checkUniqueBoxes( $(this).val() )  ){
 			pass = 0;
-			$(this).css("background", "gray");
+			$(this).css("background", "#ff7f7f");
 			$(this).qtip({
 				position: {
 					corner: {
@@ -326,7 +332,7 @@ function checkUniqueBoxes(b_code){
 }
 
 //validates the form for putting boxes into the crane carriers
-function validateCrane(){
+function validateCarrier(){
 	var pass = 1;
 	$(".box-input").each(function(index, element){
 		if($(this).val().length == 0){	//you must fill in all fields

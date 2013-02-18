@@ -66,7 +66,7 @@ if($invalid_carrier || $carrier_exists || $boxes_dne || $boxes_dup){
 if($carrierStyle == "") {
 	echo '<div class="lib-alert size1of4">Please choose a carrier style.</div>';
 } else {
-	echo '<form action="" method="POST" onsubmit="return validateCrane();">
+	echo '<form action="" method="POST" onsubmit="return validateCarrier();">
 		<h4>Carrier</h4>
 		<div class="row"><label for="carrier-label">Carrier Label</label></span><br>
 		<input type="text" id="carrier-label" name="carrier-label" class="first-focus carrier-input" maxlength="'.$CARRIER_LEN.'"><span id="carrier-icon"></div>
@@ -105,10 +105,12 @@ function showCarrier($f_ch, $l_ch, $top_row){
 	$end   = ord($l_ch);
 	global $BOX_BC_LEN;
 	//this method of numbering rows is valid for 0 through 9.
+	$index = 0;
 	for($row = $top_row; $row >= 1; $row--){
 		echo '<tr>';
 		for($i = $start; $i <= $end; $i++){
-			echo '<td><input type="text" class="box-input" placeholder="'.chr($i).'0'.$row.'" id="'.strtolower(chr($i)).'0'.$row.'" name="'.chr($i).'0'.$row.'" maxlength="'.$BOX_BC_LEN.'"></td>';
+			echo '<td><input type="text" class="box-input" placeholder="'.chr($i).'0'.$row.'" id="box'.$index.'" name="'.chr($i).'0'.$row.'" maxlength="'.$BOX_BC_LEN.'"></td>';
+			$index++;
 		}
 		echo '</tr>';
 	}
