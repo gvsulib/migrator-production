@@ -28,10 +28,8 @@ $("#box-barcode").keyup(function(e){
 	}
 });
 
-$(".box-input").change(function(){
-	//validateBoxCodes();
-	markDuplicateBoxes();
-});
+initDupBoxMarking();
+initBoxCodeValidation();
 
 /* Follow the crane loading text inputs */
 if($("#carrier-label").length > 0){
@@ -249,69 +247,78 @@ function validateCLabel(c_label){
 		);
 }
 
-function validateBoxCodes(){
+function initBoxCodeValidation(){
 	$(".box-input").each(function(){
-		var code = $(this).val();
-		var datastring = "box_c=" + code;
-		$.get(  
-		   "'.$CONTROLLER_ROOT.'checkbox.php?"+datastring,  
-		   {language: "php", version: 5},  
-		   function(data){
-				if(data == "0" || code.length != box_bc_len){
-					$(this).css("color", "red");
-					$(this).qtip({
-						content: \'This box is not in the database.\',
-						show: \'mouseover\',
-						hide: \'mouseout\',
-						style: {
-							name:\'red\',
-							tip:\'bottomMiddle\'
-						},
-						position :{
-							corner: {
-								target: \'topMiddle\',
-								tooltip: \'bottomMiddle\'
-							}
+		$(this).change(function(){
+			if($(this).val().length == box_bc_len){
+				var element = $(this);
+				var datastring = "box_c=" + element.val();
+				$.get(  
+				   "'.$CONTROLLER_ROOT.'checkbox.php?"+datastring,  
+				   {language: "php", version: 5},  
+				   function(data){
+						if(data == "0" || element.val().length != box_bc_len){
+							element.css("color", "red");
+							element.qtip({
+								content: \'Not in database.\',
+								show: \'mouseover\',
+								hide: \'mouseout\',
+								style: {
+									name:\'red\',
+									tip:\'bottomMiddle\'
+								},
+								position :{
+									corner: {
+										target: \'topMiddle\',
+										tooltip: \'bottomMiddle\'
+									}
+								}
+							});
+						} else {
+							element.css("color", "black");
+							try{
+								element.qtip(\'destroy\');
+							} catch(err){}
 						}
-					});
-				} else {
-					$(this).css("color", "black");
-					try{
-						$(this).qtip(\'destroy\');
-					} catch(err){}
-				}
+					}
+				);
 			}
-			);
+		});
 	});
 }
 
-function markDuplicateBoxes(){
-	$(".box-input").each(function(index, element){
-		if(  checkUniqueBoxes( $(this).val() )  ){
-			pass = 0;
-			$(this).css("background", "#ff7f7f");
-			$(this).qtip({
-				position: {
-					corner: {
-				        target: \'topMiddle\',
-				       	tooltip: \'bottomMiddle\'
-				    }
-				},
-				content: \'Duplicate assignment.\',
-				show: \'mouseover\',
-				hide: \'mouseout\',
-				style: {
-					name:\'red\',
-					tip:\'bottomMiddle\'
+/*
+ * Sets up an event-driven marking of duplicate box codes on the carrier loading page.
+ */
+function initDupBoxMarking(){
+	$(".box-input").each(function(){
+		$(this).change(function(){
+			if(checkUniqueBoxes($(this).val())){
+				pass = 0;
+				$(this).css("background", "#ff7f7f");
+				$(this).qtip({
+					position: {
+						corner: {
+							target: \'topMiddle\',
+							tooltip: \'bottomMiddle\'
+						}
+					},
+					content: \'Duplicate.\',
+					show: \'mouseover\',
+					hide: \'mouseout\',
+					style: {
+						name:\'red\',
+						tip:\'bottomMiddle\'
+					}
+				});
+			} else {
+				$(this).css("background", "white");
+				try{
+					$(this).qtip("destroy");
 				}
-			});
-		} else {
-			$(this).css("background", "white");
-			try{
-				$(this).qtip("destroy");
+				catch (err){}
 			}
-			catch (err){}
-		}
+		});
 	});
 }
 
@@ -319,15 +326,17 @@ function markDuplicateBoxes(){
 //the carrier label or the box inputs
 function checkUniqueBoxes(b_code){
 	var count = 0;
-	$(".box-input").each(function(e){
-		if($(this).val() == b_code && $(this).val().length != 0){
+	var elements = document.getElementsByClassName("box-input");
+	for(var i = 0; i < elements.length; i++){
+		var boxcode = elements[i].value;
+		if(boxcode == b_code){
 			count++;
 		}
-	});
-	if(count >= 2){
-		return true;
-	} else {
+	}
+	if(count <= 1){
 		return false;
+	} else {
+		return true;
 	}
 }
 
