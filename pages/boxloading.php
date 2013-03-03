@@ -59,7 +59,7 @@ echo '
 	
 function checkSubmit(){
 	global $books_table, $duplicate_skus,
-           $box_already_exists, $invalid_barcode, $BARC_FIRST_DIGITS;
+           $box_already_exists, $invalid_barcode, $BARC_FIRST_DIGITS, $BOOK_BC_LEN;
 	if(isset($_POST['box-barcode']) && isset($_POST['book_0']) && $_POST['box-barcode'] != ""
 			&& isset($_POST['box-size']) && $_POST['box-size'] != "-"){
 		$box_bc = addslashes($_POST['box-barcode']);
