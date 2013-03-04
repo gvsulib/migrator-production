@@ -67,10 +67,10 @@ function exportdb($exp_limit){
 	$zh = gzopen($gzipfn,'w');
 	
 	if(!$new_entries){
-		$sql = "SELECT sku, box_code, dedicated, carrier_label, cell_id FROM $books_table WHERE carrier_label != '' AND carrier_label != '0'";	//production
+		$sql = "SELECT sku, box_code, dedicated, carrier_label, cell_id FROM $books_table WHERE carrier_label != ''";	//production
 	} else {
 		$sql = "SELECT sku, box_code, dedicated, carrier_label, cell_id FROM $books_table WHERE exported = '0'
-			AND carrier_label != '' AND carrier_label != '0'";	//production
+			AND carrier_label != ''";	//production
 	}
 	if($exp_limit > 0){
 		$sql .= " LIMIT ".$exp_limit;
@@ -83,7 +83,7 @@ function exportdb($exp_limit){
 	gzclose($zh);
 	
 	//mark the books that were just exported as exported in the database
-	mysql_query("UPDATE $books_table SET exported = '1' WHERE exported = '0' AND carrier_label != '0' AND carrier_label != ''") or die(mysql_error());
+	mysql_query("UPDATE $books_table SET exported = '1' WHERE exported = '0' AND carrier_label != ''") or die(mysql_error());
 	
 	promptDownload($gzipfn, $mimeType);
 }
