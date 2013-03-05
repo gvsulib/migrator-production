@@ -126,9 +126,6 @@ function followBookSKUInput(id){
 	var new_id = parseInt(id) + 1;	//get the next id
 	var new_ti = new_id + 4;		//new tab index
 	$("#"+id).focus();	//focus this input
-	if($("#"+id).val().length == book_bc_len){	//this input is full already...
-		followBookSKUInput(new_id);
-	}
 	$("#"+id).keyup(function(e){	//every time a keyup event triggers...
 		var sku = $("#"+id).val();
 		if(sku.length == book_bc_len){	//this book sku input is full...
@@ -142,11 +139,23 @@ function followBookSKUInput(id){
 				"</li>";
 				$(new_element).insertAfter("#li-"+id);	//insert a new li element with an input in it with the new id
 			}
-			followBookSKUInput(new_id);	//listen on that element
+			if(validateBarcode(sku)){
+				followBookSKUInput(new_id);	//listen on that element
+			} else {
+				alert("Invalid barcode detected.");
+			}
 		} else if($("#"+id).val().length == 0){
 			$("span#icon-"+id).html("");	//empty the icon area
 		}
 	});
+}
+
+function validateBarcode(barcode){
+	if(barcode.substring(0, '.(strlen($BARC_FIRST_DIGITS)).') == "'.$BARC_FIRST_DIGITS.'"){
+		return true;
+	} else {
+		return false;
+	}
 }
 
 //validates the form for putting books into boxes
