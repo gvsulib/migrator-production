@@ -16,8 +16,24 @@ var carr_in_db = true;
 
 /* END VARIABLES */
 
+//set up the Chewie error audio track.  Source files are from: http://www.moviewavs.com/Movies/Star_Wars/chewie.html
+var audioElement = document.createElement("audio");
+audioElement.setAttribute("preload", "metadata");
+var source1 = document.createElement("source");
+source1.type= "audio/wav";
+source1.src= "'.$SITE_ROOT.'resources/sound/roar.wav";
+audioElement.appendChild(source1);
+
+var source2 = document.createElement("source");
+source2.type= "audio/mpeg";
+source2.src= "'.$SITE_ROOT.'resources/sound/roar.mp3";
+audioElement.appendChild(source2);
+
+
+
+//focus on the first element of the class "first-focus"
 if($(".first-focus").length > 0){
-	$(".first-focus")[0].focus();	//focus on the first element of the class "first-focus"
+	$(".first-focus")[0].focus();
 }
 
 /* Follow the box loading text inputs */
@@ -142,6 +158,7 @@ function followBookSKUInput(id){
 			if(validateBarcode(sku)){
 				followBookSKUInput(new_id);	//listen on that element
 			} else {
+				audioElement.play();
 				alert("Invalid barcode detected.");
 			}
 		} else if($("#"+id).val().length == 0){
