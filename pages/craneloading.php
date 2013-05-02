@@ -4,8 +4,9 @@ $carrierStyle = "";
 //boolean variables to indicate error stati
 $invalid_carrier = false;
 $carrier_exists = false;
-$boxes_dne = false;
+$boxes_dne = array();
 $boxes_dup = false;
+$boxes_in_carrier_already = array();
 
 checkSubmit();
 
@@ -44,7 +45,9 @@ echo '
 <div class="lib-form">';
 
 
-if($invalid_carrier || $carrier_exists || $boxes_dne || $boxes_dup){
+if($invalid_carrier || $carrier_exists || count($boxes_dne) > 0 
+	|| $boxes_dup || count($boxes_in_carrier_already) > 0){
+	
 	echo '<div id="duplication-error" class="lib-error size1of4">';
 	if($invalid_carrier){
 		echo 'This is an invalid carrier label.';
@@ -52,13 +55,31 @@ if($invalid_carrier || $carrier_exists || $boxes_dne || $boxes_dup){
 	if($carrier_exists){
 		echo 'This carrier label has already been entered into the database.';
 	}
-	if($boxes_dne){
+	if(count($boxes_dne) > 0){
 		if($carrier_exists) echo '<br><br>';
-		echo 'One or more of these boxes does not exist in the database.';
+		echo 'These box(es) do not exist in the database: ';
+		for($i = 0; $i < count($boxes_dne); $i++){
+			if($i > 0){
+				echo ', ';
+			}
+			echo $boxes_dne[$i];
+		}
+		echo '.';
 	}
 	if($boxes_dup){
-		if($carrier_exists || $boxes_dne) echo '<br><br>';
+		if($carrier_exists || count($boxes_dne) > 0) echo '<br><br>';
 		echo 'There is at least one duplicate box in this carrier.';
+	}
+	if(0 < count($boxes_in_carrier_already)){
+		if($carrier_exists || count($boxes_dne) > 0 || $boxes_dup) echo '<br><br>';
+		echo 'These box(es) are already in a carrier: ';
+		for($i = 0; $i < count($boxes_in_carrier_already); $i++){
+			if($i > 0){
+				echo ', ';
+			}
+			echo $boxes_in_carrier_already[$i];
+		}
+		echo '.';
 	}
 	echo '</div>';
 }
@@ -163,7 +184,7 @@ function box_array_ins(&$arr, $index){
  * into the database if the data is valid.
  */
 function processBooks($carrier_label, $carrier_style){
-	global $carrier_exists, $books_table, $boxes_dne, $boxes_dup, 
+	global $carrier_exists, $books_table, $boxes_dne, $boxes_dup, $boxes_in_carrier_already, 
 		$CARRIER_LEN, $BOX_BC_LEN, $CARRIER_PREFIXES, $EMPTY_CARRIER_CELL_STR, $invalid_carrier;
 	
 	//validate the carrier label
@@ -210,10 +231,14 @@ function processBooks($carrier_label, $carrier_style){
 			$box_code = $_POST[$cell_str];
 			if(empty($box_code) || ( strlen($box_code) != $BOX_BC_LEN && $box_code != $EMPTY_CARRIER_CELL_STR )
 				|| !box_exists($box_code)){
-				$boxes_dne = true;
+				$boxes_dne[] = $box_code;	//append it to the boxes do not exist array
 			}
 			if($box_code != $EMPTY_CARRIER_CELL_STR){
 				box_array_ins($box_array, $box_code);
+			}
+			//check if the box is already in a carrier
+			if(isBoxInCarrier($box_code)){
+				$boxes_in_carrier_already[] = $box_code;	//append it to the error array
 			}
 		}
 	}
@@ -226,7 +251,8 @@ function processBooks($carrier_label, $carrier_style){
 	}
 	
 	
-	if($invalid_carrier || $carrier_exists || $boxes_dne || $boxes_dup) return false;	//don't update database
+	if($invalid_carrier || $carrier_exists || count($boxes_dne) > 0
+		|| $boxes_dup || count($boxes_in_carrier_already) > 0) return false;	//don't update database
 	
 	/*
 	 * Otherwise, all things appear to be in the clear and we are ready for takeoff.
@@ -245,6 +271,11 @@ function processBooks($carrier_label, $carrier_style){
 			mysql_query($sql) or die(mysql_error());
 		}
 	}
+}
+
+//returns true if the $box code is inside a carrier
+function isBoxInCarrier($box){
+	return mysql_num_rows(mysql_query("SELECT idbook FROM mig_books WHERE box_code = '$box' AND carrier_label != ''")) > 0;
 }
 	
 function checkSubmit(){
