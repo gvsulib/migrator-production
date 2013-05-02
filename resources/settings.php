@@ -23,4 +23,7 @@ $RED_ERROR_ICON    = 'pc-ghost-red.png';
 $BLUE_ERROR_ICON   = 'pc-ghost-blue.png';
 $YELLOW_ERROR_ICON = 'pc-ghost-yellow.png';
 $GREEN_ERROR_ICON  = 'pc-ghost-green.png';
+
+//Empty carrier cell string
+$EMPTY_CARRIER_CELL_STR = 'e';
 ?>

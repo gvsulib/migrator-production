@@ -88,7 +88,7 @@ if($carrierStyle == "") {
 		
 	echo '</table>
 		<input type="hidden" name="c" value="'.$carrierStyle.'">
-		<div class="lib-error" id="crane-err-all-fields" style="display:none;">You must fill in all the cells.</div>
+		<div class="lib-error" id="crane-err-all-fields" style="display:none;">You must fill in all the cells (type "e" for empty cells).</div>
 		<div class="row"><input type="submit" class="lib-button-small" value="Submit"></div>
 	</form>';
 }
@@ -164,7 +164,7 @@ function box_array_ins(&$arr, $index){
  */
 function processBooks($carrier_label, $carrier_style){
 	global $carrier_exists, $books_table, $boxes_dne, $boxes_dup, 
-		$CARRIER_LEN, $BOX_BC_LEN, $CARRIER_PREFIXES, $invalid_carrier;
+		$CARRIER_LEN, $BOX_BC_LEN, $CARRIER_PREFIXES, $EMPTY_CARRIER_CELL_STR, $invalid_carrier;
 	
 	//validate the carrier label
 	//make sure the carrier label has the proper form as given...
@@ -203,15 +203,18 @@ function processBooks($carrier_label, $carrier_style){
 	for($row = $firstRow; $row >= 1; $row--){
 		// and the columns by letters...
 		for($i = $start; $i <= $end; $i++){
-			//check if any of the specified box inputs are empty, have a string length different from the standard,
+			//check if any of the specified box inputs are empty, (have a string length different from the standard and if
+			//the box code is not the empty carrier string),
 			//or if the box codes do not exist in the database
 			$cell_str = chr($i).'0'.$row;
 			$box_code = $_POST[$cell_str];
-			if(empty($box_code) || strlen($box_code) != $BOX_BC_LEN ||
-					!box_exists($box_code)){
+			if(empty($box_code) || ( strlen($box_code) != $BOX_BC_LEN && $box_code != $EMPTY_CARRIER_CELL_STR )
+				|| !box_exists($box_code)){
 				$boxes_dne = true;
 			}
-			box_array_ins($box_array, $box_code);
+			if($box_code != $EMPTY_CARRIER_CELL_STR){
+				box_array_ins($box_array, $box_code);
+			}
 		}
 	}
 	//check that there is only one entry per box code
@@ -236,7 +239,7 @@ function processBooks($carrier_label, $carrier_style){
 		// and the columns by letters...
 		for($i = $start; $i <= $end; $i++){
 			$cell_id = chr($i).'0'.$row;
-			$box_code = $_POST[$cell_id];
+			$box_code = addslashes($_POST[$cell_id]);
 			//update the database! Mark this box code with the carrier label and cell_id
 			$sql = "UPDATE $books_table SET carrier_label = '$carrier_label', cell_id = '$cell_id' WHERE box_code = '$box_code'";
 			mysql_query($sql) or die(mysql_error());

@@ -7,6 +7,7 @@ echo '
 var box_bc_len  = '.$BOX_BC_LEN.';
 var book_bc_len = '.$BOOK_BC_LEN.';
 var carrier_len = '.$CARRIER_LEN.';
+var carrier_empty_code = "'.$EMPTY_CARRIER_CELL_STR.'";
 
 //box loading validation
 var is_box_original = false;
@@ -52,6 +53,9 @@ if($("#carrier-label").length > 0){
 	$("#carrier-label").keyup(function(e){
 		if($("#carrier-label").val().length == carrier_len){
 			validateCLabel($("#carrier-label").val());
+			
+			//listen on the carrier cell inputs
+			listenOnCarrierCell(0);
 		}
 	});
 }
@@ -241,6 +245,17 @@ function validateBox(){
 
 /* CARRIER FUNCTIONS */
 
+function listenOnCarrierCell(num){
+	if($("#box" + num).length != 0){
+		$("#box" + num).focus();
+		$("#box" + num).keyup(function(e){
+			if($("#box" + num).val() == carrier_empty_code || $("#box" + num).val().length == box_bc_len){
+				listenOnCarrierCell(num + 1);
+			}
+		});
+	}
+}
+
 function validateCLabel(c_label){
 	var datastring = "carrier="+c_label;
 	$.get(  
@@ -274,42 +289,45 @@ function validateCLabel(c_label){
 }
 
 function initBoxCodeValidation(){
-	$(".box-input").each(function(){
-		$(this).change(function(){
-			if($(this).val().length == box_bc_len){
-				var element = $(this);
-				var datastring = "box_c=" + element.val();
-				$.get(  
-				   "'.$CONTROLLER_ROOT.'checkbox.php?"+datastring,  
-				   {language: "php", version: 5},  
-				   function(data){
-						if(data == "0" || element.val().length != box_bc_len){
-							element.css("color", "red");
-							element.qtip({
-								content: \'Not in database.\',
-								show: \'mouseover\',
-								hide: \'mouseout\',
-								style: {
-									name:\'red\',
-									tip:\'bottomMiddle\'
-								},
-								position :{
-									corner: {
-										target: \'topMiddle\',
-										tooltip: \'bottomMiddle\'
-									}
+	$(".box-input").keyup(function(){
+		var element = $(this);
+		if($(this).val().length == box_bc_len){
+			var datastring = "box_c=" + element.val();
+			$.get(  
+			   "'.$CONTROLLER_ROOT.'checkbox.php?"+datastring,  
+			   {language: "php", version: 5},  
+			   function(data){
+					if(data == "0" || element.val().length != box_bc_len){
+						element.css("color", "red");
+						element.qtip({
+							content: \'Not in database.\',
+							show: \'mouseover\',
+							hide: \'mouseout\',
+							style: {
+								name:\'red\',
+								tip:\'bottomMiddle\'
+							},
+							position :{
+								corner: {
+									target: \'topMiddle\',
+									tooltip: \'bottomMiddle\'
 								}
-							});
-						} else {
-							element.css("color", "black");
-							try{
-								element.qtip(\'destroy\');
-							} catch(err){}
-						}
+							}
+						});
+					} else {
+						element.css("color", "black");
+						try{
+							element.qtip(\'destroy\');
+						} catch(err){}
 					}
-				);
-			}
-		});
+				}
+			);
+		} else if($(this).val() == carrier_empty_code){
+			element.css("color", "black");
+			try{
+				element.qtip(\'destroy\');
+			} catch(err){}
+		}
 	});
 }
 
@@ -351,6 +369,10 @@ function initDupBoxMarking(){
 //checks if the same value is present in more than one text input, either
 //the carrier label or the box inputs
 function checkUniqueBoxes(b_code){
+	//check if this box code is the carrier empty code--if so, it cannot classified as a duplicate
+	if(b_code == carrier_empty_code){
+		return false;
+	}
 	var count = 0;
 	var elements = document.getElementsByClassName("box-input");
 	for(var i = 0; i < elements.length; i++){
