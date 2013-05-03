@@ -130,7 +130,10 @@ function showCarrier($f_ch, $l_ch, $top_row){
 	for($row = $top_row; $row >= 1; $row--){
 		echo '<tr>';
 		for($i = $start; $i <= $end; $i++){
-			echo '<td><input type="text" class="box-input" placeholder="'.chr($i).'0'.$row.'" id="box'.$index.'" name="'.chr($i).'0'.$row.'" maxlength="'.$BOX_BC_LEN.'"></td>';
+			//want to skip I02, J02 and K02 cells
+			if(! ($row == 2 && (chr($i) == 'I' || chr($i) == 'J' || chr($i) == 'K')) ){
+				echo '<td><input type="text" class="box-input" placeholder="'.chr($i).'0'.$row.'" id="box'.$index.'" name="'.chr($i).'0'.$row.'" maxlength="'.$BOX_BC_LEN.'"></td>';
+			}
 			$index++;
 		}
 		echo '</tr>';
