@@ -15,6 +15,12 @@ var is_box_original = false;
 //carrier loading validation
 var carr_in_db = true;
 
+//carrier loading array of box code inputs: the process of tabbing through the cells as they are filled follows
+//this array in order
+var carrier_cell_array = new Array("A01", "B01", "C01", "D01", "E01", "F01", "G01", "H01", "I01", "J01", "K01", 
+						"A02", "B02", "C02", "D02", "E02", "F02", "G02", "H02",
+						"A03", "B03", "C03");
+
 /* END VARIABLES */
 
 //set up the Chewie error audio track.  Source files are from: http://www.moviewavs.com/Movies/Star_Wars/chewie.html
@@ -54,8 +60,28 @@ if($("#carrier-label").length > 0){
 		if($("#carrier-label").val().length == carrier_len){
 			validateCLabel($("#carrier-label").val());
 			
-			//listen on the carrier cell inputs
-			listenOnCarrierCell(0);
+			//listen on the first carrier cell input
+			$(".box-input[name=" + carrier_cell_array[0] + "]").focus();
+			
+			//wait to focus on the rest when the previous one is filled
+			$(".box-input").keyup(function(){
+				//check if we should move the cursor
+				if( $(this).val().length == box_bc_len || $(this).val().toLowerCase() == carrier_empty_code ){
+					var name = $(this).attr("name");
+					var new_index = 1 + carrier_cell_array.indexOf(name);	//get the next cell index from the array
+					var next_name, end = 0;	//for the next name from the array; to mark if we hit the end of the array before finding a valid name
+					//find the next name that corresponds to an input element on this page
+					for(var i = 0; i < carrier_cell_array.length && $(".box-input[name=" + next_name + "]").length == 0; i++){
+						next_name = carrier_cell_array[new_index + i];
+						if(i + 1 == carrier_cell_array.length){	//we hit the end of the array, so there are no valid names
+							end = 1;
+						}
+					}
+					if(end != 1){
+						$(".box-input[name=" + next_name + "]").focus();
+					}
+				}
+			});
 		}
 	});
 }
@@ -245,17 +271,6 @@ function validateBox(){
 
 /* CARRIER FUNCTIONS */
 
-function listenOnCarrierCell(num){
-	if($("#box" + num).length != 0){
-		$("#box" + num).focus();
-		$("#box" + num).keyup(function(e){
-			if($("#box" + num).val() == carrier_empty_code || $("#box" + num).val().length == box_bc_len){
-				listenOnCarrierCell(num + 1);
-			}
-		});
-	}
-}
-
 function validateCLabel(c_label){
 	var datastring = "carrier="+c_label;
 	$.get(  
@@ -336,30 +351,36 @@ function initBoxCodeValidation(){
  */
 function initDupBoxMarking(){
 	$(".box-input").keyup(function(){
-		if(checkUniqueBoxes($(this).val())){
-			pass = 0;
-			$(this).css("background", "#ff7f7f");
-			$(this).qtip({
-				position: {
-					corner: {
-						target: \'topMiddle\',
-						tooltip: \'bottomMiddle\'
+		//check if this is a completed box code
+		if($(this).val().length == box_bc_len){
+			//we need to check each box code for uniqueness
+			$(".box-input").each(function(){
+				if(checkUniqueBoxes($(this).val())){
+				pass = 0;
+				$(this).css("background", "#ff7f7f");
+				$(this).qtip({
+					position: {
+						corner: {
+							target: \'topMiddle\',
+							tooltip: \'bottomMiddle\'
+						}
+					},
+					content: \'Duplicate.\',
+					show: \'mouseover\',
+					hide: \'mouseout\',
+					style: {
+						name:\'red\',
+						tip:\'bottomMiddle\'
 					}
-				},
-				content: \'Duplicate.\',
-				show: \'mouseover\',
-				hide: \'mouseout\',
-				style: {
-					name:\'red\',
-					tip:\'bottomMiddle\'
+				});
+				} else {
+					$(this).css("background", "white");
+					try{
+						$(this).qtip("destroy");
+					}
+					catch (err){}
 				}
 			});
-		} else {
-			$(this).css("background", "white");
-			try{
-				$(this).qtip("destroy");
-			}
-			catch (err){}
 		}
 	});
 }
@@ -368,9 +389,12 @@ function initDupBoxMarking(){
 //the carrier label or the box inputs
 function checkUniqueBoxes(b_code){
 	//check if this box code is the carrier empty code--if so, it cannot classified as a duplicate
-	if(b_code == carrier_empty_code){
+	//also check if it is of length 0 -- that also cannot be a duplicate
+	if(b_code.toLowerCase() == carrier_empty_code || b_code.length == 0){
 		return false;
 	}
+	
+	//count the number of duplicate boxes of this b_code
 	var count = 0;
 	var elements = document.getElementsByClassName("box-input");
 	for(var i = 0; i < elements.length; i++){
@@ -379,11 +403,7 @@ function checkUniqueBoxes(b_code){
 			count++;
 		}
 	}
-	if(count <= 1){
-		return false;
-	} else {
-		return true;
-	}
+	return count > 1;
 }
 
 //validates the form for putting boxes into the crane carriers
