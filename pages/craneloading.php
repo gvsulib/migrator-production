@@ -229,11 +229,11 @@ function processBooks($carrier_label, $carrier_style){
 			//or if the box codes do not exist in the database
 			$cell_str = chr($i).'0'.$row;
 			$box_code = $_POST[$cell_str];
-			if(empty($box_code) || ( strlen($box_code) != $BOX_BC_LEN && $box_code != $EMPTY_CARRIER_CELL_STR )
+			if(empty($box_code) || ( strlen($box_code) != $BOX_BC_LEN && strtolower($box_code) != $EMPTY_CARRIER_CELL_STR )
 				|| !box_exists($box_code)){
 				$boxes_dne[] = $box_code;	//append it to the boxes do not exist array
 			}
-			if($box_code != $EMPTY_CARRIER_CELL_STR){
+			if(strtolower($box_code) != $EMPTY_CARRIER_CELL_STR){
 				box_array_ins($box_array, $box_code);
 			}
 			//check if the box is already in a carrier
@@ -266,9 +266,11 @@ function processBooks($carrier_label, $carrier_style){
 		for($i = $start; $i <= $end; $i++){
 			$cell_id = chr($i).'0'.$row;
 			$box_code = addslashes($_POST[$cell_id]);
-			//update the database! Mark this box code with the carrier label and cell_id
-			$sql = "UPDATE $books_table SET carrier_label = '$carrier_label', cell_id = '$cell_id' WHERE box_code = '$box_code'";
-			mysql_query($sql) or die(mysql_error());
+			if(strtolower($box_code) != $EMPTY_CARRIER_CELL_STR){	//only if this is not an empty cell
+				//update the database! Mark this box code with the carrier label and cell_id
+				$sql = "UPDATE $books_table SET carrier_label = '$carrier_label', cell_id = '$cell_id' WHERE box_code = '$box_code'";
+				mysql_query($sql) or die(mysql_error());
+			}
 		}
 	}
 }
