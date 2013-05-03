@@ -335,34 +335,32 @@ function initBoxCodeValidation(){
  * Sets up an event-driven marking of duplicate box codes on the carrier loading page.
  */
 function initDupBoxMarking(){
-	$(".box-input").each(function(){
-		$(this).change(function(){
-			if(checkUniqueBoxes($(this).val())){
-				pass = 0;
-				$(this).css("background", "#ff7f7f");
-				$(this).qtip({
-					position: {
-						corner: {
-							target: \'topMiddle\',
-							tooltip: \'bottomMiddle\'
-						}
-					},
-					content: \'Duplicate.\',
-					show: \'mouseover\',
-					hide: \'mouseout\',
-					style: {
-						name:\'red\',
-						tip:\'bottomMiddle\'
+	$(".box-input").keyup(function(){
+		if(checkUniqueBoxes($(this).val())){
+			pass = 0;
+			$(this).css("background", "#ff7f7f");
+			$(this).qtip({
+				position: {
+					corner: {
+						target: \'topMiddle\',
+						tooltip: \'bottomMiddle\'
 					}
-				});
-			} else {
-				$(this).css("background", "white");
-				try{
-					$(this).qtip("destroy");
+				},
+				content: \'Duplicate.\',
+				show: \'mouseover\',
+				hide: \'mouseout\',
+				style: {
+					name:\'red\',
+					tip:\'bottomMiddle\'
 				}
-				catch (err){}
+			});
+		} else {
+			$(this).css("background", "white");
+			try{
+				$(this).qtip("destroy");
 			}
-		});
+			catch (err){}
+		}
 	});
 }
 
