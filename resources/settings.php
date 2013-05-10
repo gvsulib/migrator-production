@@ -1,4 +1,4 @@
-<?php
+ <?php
 
 //CONSTANTS
 $SITE_NAME = "Library Migrator";
@@ -23,6 +23,11 @@ $RED_ERROR_ICON    = 'pc-ghost-red.png';
 $BLUE_ERROR_ICON   = 'pc-ghost-blue.png';
 $YELLOW_ERROR_ICON = 'pc-ghost-yellow.png';
 $GREEN_ERROR_ICON  = 'pc-ghost-green.png';
+
+//Carrier cell array of valid cell labels
+$CARRIER_CELL_ARRAY = array("A01", "B01", "C01", "D01", "E01", "F01", "G01", "H01", "I01", "J01", "K01", 
+						"A02", "B02", "C02", "D02", "E02", "F02", "G02", "H02",
+						"A03", "B03", "C03");
 
 //Empty carrier cell string
 $EMPTY_CARRIER_CELL_STR = 'e';

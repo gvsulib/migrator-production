@@ -17,9 +17,14 @@ var carr_in_db = true;
 
 //carrier loading array of box code inputs: the process of tabbing through the cells as they are filled follows
 //this array in order
-var carrier_cell_array = new Array("A01", "B01", "C01", "D01", "E01", "F01", "G01", "H01", "I01", "J01", "K01", 
-						"A02", "B02", "C02", "D02", "E02", "F02", "G02", "H02",
-						"A03", "B03", "C03");
+var carrier_cell_array = new Array(';
+for($i = 0; $i < count($CARRIER_CELL_ARRAY); $i++){
+	echo '"'.$CARRIER_CELL_ARRAY[$i].'"';
+	if($i + 1 < count($CARRIER_CELL_ARRAY)){
+		echo ',';
+	}
+}
+echo ');
 
 /* END VARIABLES */
 

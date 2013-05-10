@@ -121,6 +121,7 @@ echo '</div>';
  * Prints out a carrier given the start and end characters for the carrier cell letters
  * and the number of the top row of the carrier (it counts down to row 1)
  */
+
 function showCarrier($f_ch, $l_ch, $top_row){
 	$start = ord($f_ch);
 	$end   = ord($l_ch);
@@ -230,18 +231,22 @@ function processBooks($carrier_label, $carrier_style){
 			//check if any of the specified box inputs are empty, (have a string length different from the standard and if
 			//the box code is not the empty carrier string),
 			//or if the box codes do not exist in the database
-			$cell_str = chr($i).'0'.$row;
-			$box_code = $_POST[$cell_str];
-			if(empty($box_code) || ( strlen($box_code) != $BOX_BC_LEN && strtolower($box_code) != $EMPTY_CARRIER_CELL_STR )
-				|| !box_exists($box_code)){
-				$boxes_dne[] = $box_code;	//append it to the boxes do not exist array
-			}
-			if(strtolower($box_code) != $EMPTY_CARRIER_CELL_STR){
-				box_array_ins($box_array, $box_code);
-			}
-			//check if the box is already in a carrier
-			if(isBoxInCarrier($box_code)){
-				$boxes_in_carrier_already[] = $box_code;	//append it to the error array
+			
+			//want to skip I02, J02 and K02 cells
+			if(! ($row == 2 && (chr($i) == 'I' || chr($i) == 'J' || chr($i) == 'K')) ){
+				$cell_str = chr($i).'0'.$row;
+				$box_code = $_POST[$cell_str];
+				if(empty($box_code) || ( strlen($box_code) != $BOX_BC_LEN && strtolower($box_code) != $EMPTY_CARRIER_CELL_STR )
+					|| !box_exists($box_code)){
+					$boxes_dne[] = $box_code;	//append it to the boxes do not exist array
+				}
+				if(strtolower($box_code) != $EMPTY_CARRIER_CELL_STR){
+					box_array_ins($box_array, $box_code);
+				}
+				//check if the box is already in a carrier
+				if(isBoxInCarrier($box_code)){
+					$boxes_in_carrier_already[] = $box_code;	//append it to the error array
+				}
 			}
 		}
 	}
@@ -267,12 +272,15 @@ function processBooks($carrier_label, $carrier_style){
 	for($row = $firstRow; $row >= 1; $row--){
 		// and the columns by letters...
 		for($i = $start; $i <= $end; $i++){
-			$cell_id = chr($i).'0'.$row;
-			$box_code = addslashes($_POST[$cell_id]);
-			if(strtolower($box_code) != $EMPTY_CARRIER_CELL_STR){	//only if this is not an empty cell
-				//update the database! Mark this box code with the carrier label and cell_id
-				$sql = "UPDATE $books_table SET carrier_label = '$carrier_label', cell_id = '$cell_id' WHERE box_code = '$box_code'";
-				mysql_query($sql) or die(mysql_error());
+			//want to skip I02, J02 and K02 cells
+			if(! ($row == 2 && (chr($i) == 'I' || chr($i) == 'J' || chr($i) == 'K')) ){
+				$cell_id = chr($i).'0'.$row;
+				$box_code = addslashes($_POST[$cell_id]);
+				if(strtolower($box_code) != $EMPTY_CARRIER_CELL_STR){	//only if this is not an empty cell
+					//update the database! Mark this box code with the carrier label and cell_id
+					$sql = "UPDATE $books_table SET carrier_label = '$carrier_label', cell_id = '$cell_id' WHERE box_code = '$box_code'";
+					mysql_query($sql) or die(mysql_error());
+				}
 			}
 		}
 	}
