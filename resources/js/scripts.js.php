@@ -259,10 +259,7 @@ function validateBox(){
 		
 	});
 	
-	if(pass == 1){
-		return true;	//A value of "true" means the form will submit.
-	}
-	return false;	//validation failed--the user must fix the form input
+	return pass == 1;	//A value of "true" means the form will submit.
 }
 
 /* END BOX LOADING SCRIPTS */
@@ -422,10 +419,7 @@ function validateCarrier(){
 		pass = 0;
 	}
 	
-	if(pass == 1){
-		return true;
-	}
-	return false;
+	return pass == 1;
 }
 
 /* END CARRIER FUNCTIONS */
