@@ -1,4 +1,4 @@
- <?php
+<?php
 
 //CONSTANTS
 $SITE_NAME = "Library Migrator";
